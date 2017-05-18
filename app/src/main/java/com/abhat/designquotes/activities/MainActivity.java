@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import com.abhat.designquotes.presenters.QuotePresenterImpl;
 public class MainActivity extends AppCompatActivity implements MainView, View.OnClickListener {
 
     private Button mQuoteButton;
+    private ProgressBar mProgressBar;
     private TextView mQuote;
     private TextView mQuoteAuthor;
     private FloatingActionButton mFloatingActionButton;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         App.setContext(this);
+        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
         mQuoteButton = (Button)findViewById(R.id.quotebtn);
         mQuote = (TextView)findViewById(R.id.quote);
         mFloatingActionButton = (FloatingActionButton)findViewById(R.id.share);
@@ -49,12 +52,13 @@ public class MainActivity extends AppCompatActivity implements MainView, View.On
 
     @Override
     public void showProgressBar() {
-
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.setIndeterminate(true);
     }
 
     @Override
     public void hideProgressBar() {
-
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override

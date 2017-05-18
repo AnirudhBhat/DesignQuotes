@@ -19,7 +19,8 @@ public class QuotePresenterImpl implements QuotePresenter, QuoteInteractor.onQuo
 
     @Override
     public void fetchQuote() {
-        if (mQuoteInteractor != null) {
+        if (mQuoteInteractor != null && mMainView != null) {
+            mMainView.showProgressBar();
             mQuoteInteractor.fetchQuoteFromNetwork(this);
         }
     }
@@ -27,6 +28,7 @@ public class QuotePresenterImpl implements QuotePresenter, QuoteInteractor.onQuo
     @Override
     public void onSuccess(String quote, String author) {
         if (mMainView != null) {
+            mMainView.hideProgressBar();
             mMainView.showQuote(quote, author);
         }
     }

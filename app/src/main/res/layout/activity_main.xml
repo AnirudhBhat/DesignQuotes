@@ -7,6 +7,12 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@android:style/Widget.Material.ProgressBar.Horizontal"/>
+
     <TextView
         android:id="@+id/quote"
         android:layout_width="wrap_content"
@@ -39,7 +45,8 @@
         android:layout_alignParentBottom="true"
         android:foreground="?attr/selectableItemBackground"
         android:background="#42A5F5"
-        android:text="Next Quote"/>
+        android:text="Next Quote"
+        android:textColor="@android:color/white"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/share"
