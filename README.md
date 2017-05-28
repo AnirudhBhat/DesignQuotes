@@ -1,7 +1,6 @@
 # DesignQuotes
 Get inspired
 
-=====
 gif
 =====
 ![Imgur](http://i.imgur.com/hqhOU8O.gif)
