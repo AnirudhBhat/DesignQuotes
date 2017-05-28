@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.abhat.designquotes.App;
+import com.abhat.designquotes.Quote;
 import com.abhat.designquotes.activities.MainActivity;
 
 import org.jsoup.Jsoup;
@@ -12,6 +13,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by cumulations on 23/4/17.
@@ -19,22 +29,39 @@ import java.io.IOException;
 
 public class QuoteInteractorImpl implements QuoteInteractor {
     private onQuoteFetchFinished mListener;
+    private Quote quotes;
+
     @Override
-    public void fetchQuoteFromNetwork(onQuoteFetchFinished listener) {
+    public void fetchQuoteFromNetwork(final onQuoteFetchFinished listener) {
         this.mListener = listener;
-        AsyncTask.execute(new Runnable() {
+        Observable.fromCallable(new Callable<Quote>() {
             @Override
-            public void run() {
-                if (isOnline()) {
-                    fetchQuote();
-                } else {
-                    if (mListener != null) {
-                        mListener.onNetworkError();
-                    }
-                }
+            public Quote call() throws Exception {
+                return fetchQuote();
             }
-        });
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<Quote>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Quote quote) {
+                        if (mListener != null) {
+                            mListener.onSuccess(quotes.getQuote(), quotes.getAuthor());
+                        }
+                    }
+                });
     }
+
 
 
     /*
@@ -53,7 +80,7 @@ public class QuoteInteractorImpl implements QuoteInteractor {
         return false;
     }
 
-    private void fetchQuote() {
+    private Quote fetchQuote() {
         String url = "https://quotesondesign.com/";
 
         try {
@@ -63,17 +90,14 @@ public class QuoteInteractorImpl implements QuoteInteractor {
             Elements elem1 = doc.select("span#quote-title");
             final String quoteAuthor = elem1.get(0).text();
             Log.d("QUOTE", "" + quote);
-            ((MainActivity) App.getContext()).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mListener != null) {
-                        mListener.onSuccess(quote, quoteAuthor);
-                    }
-                }
-            });
+            quotes = new Quote();
+            quotes.setQuote(quote);
+            quotes.setAuthor(quoteAuthor);
+            return quotes;
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("QUOTE", "error");
         }
+        return null;
     }
 }
